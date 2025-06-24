@@ -4,6 +4,12 @@
     font-weight: bold;
     font-size: x-large;
 }
+.letter:disabled {
+    color: gray;
+    font-family: Brush Script MT, cursive;
+    font-weight: bold;
+    font-size: x-large;
+}
 .radix {
     color: gray;
     font-family: Helvetica, sans-serif;

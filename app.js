@@ -23,7 +23,7 @@ function DrawKbRow(keys) {
 }
 
 function DrawKeyButton(ch) {
-    return "<button class='letter' onclick='KbPressForWord(\"" + ch + "\")'>" + ch + "</button>";
+    return "<button class='letter' id='keyButton" + ch + "' onclick='KbPressForWord(\"" + ch + "\")'>" + ch + "</button>";
 }
 
 function DrawHalfKeyGap() {
@@ -35,11 +35,14 @@ function DrawKeyGap() {return DrawHalfKeyGap() + DrawHalfKeyGap();}
 function KbPressForWord(ch) {
     var el = document.getElementById("prefix");
     el.setAttribute("value", el.getAttribute("value") +ch);
-    RenderMatchingWordButtons();
+    var matchingWordIndices = RenderMatchingWordButtons();
+    EnableDisableKeys(matchingWordIndices);
 }
 
 function RenderMatchingWordButtons() {
     var prefix = document.getElementById("prefix").getAttribute("value");
     var el = document.getElementById("matchingWords");
-    el.setHTMLUnsafe(DrawMatchingWordButtons(prefix));
+    var matchingWordIndices = MatchingWordIndices(prefix);
+    el.setHTMLUnsafe(DrawMatchingWordButtons(matchingWordIndices));
+    return matchingWordIndices;
 }

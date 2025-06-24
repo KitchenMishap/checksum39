@@ -25,18 +25,16 @@ function DrawWord(wordIndex) {
     var wordString = "<span class='word'>" + bip39Words[wordIndex] + "</span>\n";
     var numString = "<span class='radix'>oct&nbsp;</span><span class='oct'>" + octZeroFilled + "&nbsp;</span><span class='radix'>hex&nbsp;</span><span class='hex'>" + hexZeroFilled + "</span>\n";
     var binString = "<span class='bin'>" + binZeroFilled + "&nbsp;</span>\n";
-    var result = "<div>" + decString + wordString + "<br>\n  " + binString + numString + "</div>\n";
-    return result;
+    return "<div>" + decString + wordString + "<br>\n  " + binString + numString + "</div>\n";
 }
 
-function DrawMatchingWordButtons(prefix) {
+function DrawMatchingWordButtons(matchingWordIndices) {
     var resultHtml = "";
-    var indices = MatchingWordIndices(prefix);
-    if (indices.length==0) {
+    if (matchingWordIndices.length===0) {
         return "<span class='msg'>No matching words found</span>";
     }
-    for (var i=0; i<indices.length; i++) {
-        resultHtml += "<button>" + DrawWord(indices[i]) + "</button>\n";
+    for (var i=0; i<matchingWordIndices.length; i++) {
+        resultHtml += "<button>" + DrawWord(matchingWordIndices[i]) + "</button>\n";
     }
     return resultHtml;
 }
