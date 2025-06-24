@@ -1,16 +1,22 @@
 <html lang="en"><head>
     <title>Checksum39</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="app.js"></script>
+    <script src="bip39words.js"></script>
+    <script src="wordutils.js"></script>
 </head>
 <body onload=OnLoad()>
 <h1>Checksum39</h1>
-<label for="wordstart">Start of word: </label><input type="text"
-       id="wordstart"
+<label for="prefix">Type word prefix: </label><input type="text"
+       id="prefix"
        size="4"
        maxlength="4"
        value=""
        inputmode="none"/><br><br>
 <div id="kbForWord">
     <!-- Keyboard will be rendered into here as html buttons -->
+</div>
+<div id="matchingWords">
+    <!-- Matching words will be rendered into here as html buttons -->
 </div>
 </body></html>

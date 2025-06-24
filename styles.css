@@ -1,0 +1,47 @@
+.letter {
+    color: black;
+    font-family: Brush Script MT, cursive;
+    font-weight: bold;
+    font-size: x-large;
+}
+.radix {
+    color: gray;
+    font-family: Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: small;
+}
+.dec {
+    color: darkmagenta;
+    font-family: Monaco, monospace;
+    font-weight: normal;
+    font-size: large;
+}
+.hex {
+    color: blue;
+    font-family: Monaco, monospace;
+    font-weight: normal;
+    font-size: small;
+}
+.oct {
+    color: blue;
+    font-family: Monaco, monospace;
+    font-weight: normal;
+    font-size: small;
+}
+.bin {
+    color: blue;
+    font-family: Monaco, monospace;
+    font-size: small;
+}
+.word {
+    color: black;
+    font-family: Brush Script MT, cursive;
+    font-size: x-large;
+    font-weight: bold;
+}
+.msg {
+    color: red;
+    font-family: Monaco, monospace;
+    font-size: x-large;
+    font-weight: bold;
+}
