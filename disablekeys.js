@@ -1,5 +1,5 @@
 function EnableDisableKeys(matchingWordIndices) {
-    var el = document.getElementById("prefix");
+    var el = document.getElementsByClassName("prefix")[0];
     var prefix = el.getAttribute("value");
     var nextChar = prefix.length;
     var enable = [];

@@ -2,9 +2,10 @@
 var wordIndices
 
 function OnLoad() {
+    wordIndices = [];
+    RenderChosenWords();
     RenderKbForWord();
     RenderMatchingWordButtons();
-    wordIndices = [];
 }
 
 function RenderKbForWord() {
@@ -37,7 +38,7 @@ function DrawHalfKeyGap() {
 function DrawKeyGap() {return DrawHalfKeyGap() + DrawHalfKeyGap();}
 
 function KbPressForWord(ch) {
-    var el = document.getElementById("prefix");
+    var el = document.getElementsByClassName("prefix")[0];
     el.setAttribute("value", el.getAttribute("value") +ch);
     var matchingWordIndices = RenderMatchingWordButtons();
     if( matchingWordIndices.length===1) {
@@ -52,7 +53,7 @@ function KbPressForWord(ch) {
 }
 
 function RenderMatchingWordButtons() {
-    var prefix = document.getElementById("prefix").getAttribute("value");
+    var prefix = document.getElementsByClassName("prefix")[0].getAttribute("value");
     var el = document.getElementById("matchingWords");
     var matchingWordIndices = MatchingWordIndices(prefix);
     el.setHTMLUnsafe(DrawMatchingWordButtons(matchingWordIndices));
@@ -65,10 +66,31 @@ function AddWord(wordIndex) {
 }
 
 function RenderChosenWords() {
-    for (var i = 0; i < wordIndices.length; i++) {
+    for (var i = 0; i < 12; i++) {
         var id = "w" + i;
         var el = document.getElementById(id);
-        var html = DrawWord(wordIndices[i]);
+        html = "(word " + (i+1) + ")<br>";
+        if( i < wordIndices.length ) {
+            html += DrawWord(wordIndices[i]);
+        } else if ( i === wordIndices.length ) {
+            html += DrawWordEditBox(i);
+        } else {
+            html += DrawEmptyWord(i);
+        }
         el.setHTMLUnsafe(html);
     }
+}
+
+function DrawWordEditBox() {
+    return "<input type='text' " +
+        "class='prefix' " +
+        "size='4' " +
+        "maxlength='4' " +
+        "value='' " +
+        "inputmode='none'" +
+        "/>";
+}
+
+function DrawEmptyWord() {
+    return "----";
 }

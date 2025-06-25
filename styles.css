@@ -5,7 +5,13 @@
     font-size: x-large;
 }
 .letter:disabled {
-    color: gray;
+    color: lightgray;
+    font-family: Brush Script MT, cursive;
+    font-weight: bold;
+    font-size: x-large;
+}
+input[type="text"].prefix {
+    color: black;
     font-family: Brush Script MT, cursive;
     font-weight: bold;
     font-size: x-large;
