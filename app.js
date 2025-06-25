@@ -1,6 +1,10 @@
+// globals
+var wordIndices
+
 function OnLoad() {
     RenderKbForWord();
     RenderMatchingWordButtons();
+    wordIndices = [];
 }
 
 function RenderKbForWord() {
@@ -36,7 +40,15 @@ function KbPressForWord(ch) {
     var el = document.getElementById("prefix");
     el.setAttribute("value", el.getAttribute("value") +ch);
     var matchingWordIndices = RenderMatchingWordButtons();
-    EnableDisableKeys(matchingWordIndices);
+    if( matchingWordIndices.length===1) {
+        AddWord(matchingWordIndices[0]);
+        el.setAttribute("value", "");
+        matching = MatchingWordIndices("");
+        EnableDisableKeys(matching);
+        RenderMatchingWordButtons();
+    } else {
+        EnableDisableKeys(matchingWordIndices);
+    }
 }
 
 function RenderMatchingWordButtons() {
@@ -45,4 +57,18 @@ function RenderMatchingWordButtons() {
     var matchingWordIndices = MatchingWordIndices(prefix);
     el.setHTMLUnsafe(DrawMatchingWordButtons(matchingWordIndices));
     return matchingWordIndices;
+}
+
+function AddWord(wordIndex) {
+    wordIndices.push(wordIndex);
+    RenderChosenWords();
+}
+
+function RenderChosenWords() {
+    for (var i = 0; i < wordIndices.length; i++) {
+        var id = "w" + i;
+        var el = document.getElementById(id);
+        var html = DrawWord(wordIndices[i]);
+        el.setHTMLUnsafe(html);
+    }
 }
