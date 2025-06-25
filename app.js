@@ -78,11 +78,17 @@ function RenderChosenWords() {
         var el = document.getElementById(id);
         html = "(word " + (i+1) + ")<br>";
         if( i < wordIndices.length ) {
+            var buttonClass = "insufficient";
+            if (wordIndices.length===12) {
+                buttonClass = "invalid";
+            }
+            html += "<button class='" + buttonClass + "'>";
             html += DrawWord(wordIndices[i]);
+            html += "</button>\n";
         } else if ( i === wordIndices.length ) {
-            html += DrawWordEditBox(i);
+            html += DrawWordEditBox();
         } else {
-            html += DrawEmptyWord(i);
+            html += DrawEmptyWord();
         }
         el.setHTMLUnsafe(html);
     }

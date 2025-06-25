@@ -57,3 +57,12 @@ input[type="text"].prefix {
     font-size: x-large;
     font-weight: bold;
 }
+.insufficient {
+    background: lightyellow;
+}
+.invalid {
+    background: lightpink;
+}
+.valid {
+    background: lightgreen;
+}
