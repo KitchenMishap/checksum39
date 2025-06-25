@@ -5,7 +5,8 @@ function OnLoad() {
     wordIndices = [];
     RenderChosenWords();
     RenderKbForWord();
-    RenderMatchingWordButtons();
+    var matchingWordIndices = RenderMatchingWordButtons();
+    EnableDisableKeys(matchingWordIndices);
 }
 
 function RenderKbForWord() {
@@ -53,11 +54,17 @@ function KbPressForWord(ch) {
 }
 
 function RenderMatchingWordButtons() {
-    var prefix = document.getElementsByClassName("prefix")[0].getAttribute("value");
+    var elPrefix = document.getElementsByClassName("prefix")[0]
     var el = document.getElementById("matchingWords");
-    var matchingWordIndices = MatchingWordIndices(prefix);
-    el.setHTMLUnsafe(DrawMatchingWordButtons(matchingWordIndices));
-    return matchingWordIndices;
+    if (elPrefix !== undefined) {
+        var prefix = elPrefix.getAttribute("value");
+        var matchingWordIndices = MatchingWordIndices(prefix);
+        el.setHTMLUnsafe(DrawMatchingWordButtons(matchingWordIndices));
+        return matchingWordIndices;
+    } else {
+        el.setHTMLUnsafe("");
+        return [];
+    }
 }
 
 function AddWord(wordIndex) {
@@ -93,4 +100,15 @@ function DrawWordEditBox() {
 
 function DrawEmptyWord() {
     return "----";
+}
+
+function OnChooseWord(index) {
+    AddWord(index);
+    var el = document.getElementsByClassName("prefix")[0];
+    if (el) {
+        el.setAttribute("value", "");
+    }
+    matching = MatchingWordIndices("");
+    EnableDisableKeys(matching);
+    RenderMatchingWordButtons();
 }

@@ -1,5 +1,10 @@
 function EnableDisableKeys(matchingWordIndices) {
     var el = document.getElementsByClassName("prefix")[0];
+    if (!el) {
+        // All words now chosen
+        HideKeyboard()
+        return
+    }
     var prefix = el.getAttribute("value");
     var nextChar = prefix.length;
     var enable = [];
@@ -17,5 +22,12 @@ function EnableDisableKeys(matchingWordIndices) {
         var id = "keyButton" + String.fromCharCode(i + 65);
         el = document.getElementById(id);
         el.disabled = !enable[i];
+    }
+}
+function HideKeyboard() {
+    for (i = 0; i < 26; i++) {
+        var id = "keyButton" + String.fromCharCode(i + 65);
+        el = document.getElementById(id);
+        el.hidden = true;
     }
 }

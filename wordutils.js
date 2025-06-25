@@ -34,7 +34,8 @@ function DrawMatchingWordButtons(matchingWordIndices) {
         return "<span class='msg'>No matching words found</span>";
     }
     for (var i=0; i<matchingWordIndices.length; i++) {
-        resultHtml += "<button>" + DrawWord(matchingWordIndices[i]) + "</button>\n";
+        resultHtml += "<button onclick='OnChooseWord(" + matchingWordIndices[i] + ")'> +" +
+            DrawWord(matchingWordIndices[i]) + "</button>\n";
     }
     return resultHtml;
 }
