@@ -73,15 +73,24 @@ function AddWord(wordIndex) {
 }
 
 function RenderChosenWords() {
+    var checksumValid = true;
+    try {
+        CheckChecksum();
+    } catch {
+        checksumValid = false;
+    }
+    buttonClass = "valid";
+    if (!checksumValid) {
+        buttonClass = "invalid";
+    }
+    if (wordIndices.length!==12) {
+        buttonClass = "insufficient"
+    }
     for (var i = 0; i < 12; i++) {
         var id = "w" + i;
         var el = document.getElementById(id);
         html = "(word " + (i+1) + ")<br>";
         if( i < wordIndices.length ) {
-            var buttonClass = "insufficient";
-            if (wordIndices.length===12) {
-                buttonClass = "invalid";
-            }
             html += "<button class='" + buttonClass + "'>";
             html += DrawWord(wordIndices[i]);
             html += "</button>\n";
@@ -117,4 +126,21 @@ function OnChooseWord(index) {
     matching = MatchingWordIndices("");
     EnableDisableKeys(matching);
     RenderMatchingWordButtons();
+}
+
+function CheckChecksum() {
+    if (wordIndices.length!==12) {
+        throw(null);
+    }
+    passphrase = bip39Words(wordIndices[0]);
+    for (var i = 1; i < 12; i++) {
+        passphrase += " " + bip39Words(wordIndices[i]);
+    }
+    // This will throw if the checksum is invalid
+    try {
+        Passphrase.checksum(wordIndices);
+    } catch (e) {
+        throw(null);
+    }
+    return;
 }
