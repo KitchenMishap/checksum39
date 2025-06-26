@@ -161,7 +161,12 @@ function RenderInstruction(buttonClass) {
     if (buttonClass === "insufficient") {
         el.setHTMLUnsafe("Add letters or a word:")
     } else if (buttonClass === "invalid") {
-        el.setHTMLUnsafe("Checksum invalid, choose a word to change:")
+        if (selectedWord === null) {
+            el.setHTMLUnsafe("Checksum invalid, choose a word above to change...");
+        } else {
+            el.setHTMLUnsafe("Checksum invalid, replace with one of these valid words:");
+            RenderValidChecksumButtons();
+        }
     } else if (buttonClass === "valid") {
         el.setHTMLUnsafe("Checksum valid, well done!")
     }
@@ -169,5 +174,74 @@ function RenderInstruction(buttonClass) {
 
 function OnSelectWord(nthWord) {
     selectedWord = nthWord;
-    RenderChosenWords();
+    var buttonClass = RenderChosenWords();
+    RenderInstruction(buttonClass);
+}
+
+async function GenerateValidWordButtons(baselineWords, indexToReplace) {
+    return await AppendButtonIfChecksumValidRecurse(baselineWords, indexToReplace, 0,"");
+}
+
+async function AppendButtonIfChecksumValidRecurse(baselineWords, indexToReplace, nextWordIndexToTry, appendStringSoFar) {
+    var htmlResultSoFar = "" + appendStringSoFar;
+    if (nextWordIndexToTry === 2048) {
+        return htmlResultSoFar;   // Break recursive calls
+    }
+
+    var wordsToTry = [];
+    for (var i = 0; i < 12; i++) {
+        wordsToTry.push(baselineWords[i]);
+    }
+    wordsToTry[indexToReplace] = bip39Words[nextWordIndexToTry];
+
+    var valid = await TryWords(wordsToTry);
+
+    var button = "";
+    if (valid) {
+        button += "<button " +
+            "class='correctschecksum' " +
+            "onclick='OnReplaceWord(" + nextWordIndexToTry + ")' " +
+            ">";
+        button += DrawWord(nextWordIndexToTry);
+        button += "</button>\n";
+    }
+    htmlResultSoFar += button;
+    return await AppendButtonIfChecksumValidRecurse(baselineWords, indexToReplace, nextWordIndexToTry + 1, htmlResultSoFar);
+}
+
+function RenderValidChecksumButtons()
+{
+    var html = "";
+    var el = document.getElementById("matchingWords");
+    if (selectedWord === null ) {
+        // User has not selected a word to replace
+        el.setHTMLUnsafe(html);
+        return;
+    }
+    if (wordIndices.length!==12) {
+        // There can be no valid replacements until we have 12 words
+        el.setHTMLUnsafe(html);
+        return;
+    }
+    var baselineWords = [];
+    for (var i = 0; i < 12; i++) {
+        baselineWords[i] = bip39Words[wordIndices[i]];
+    }
+    GenerateValidWordButtons(baselineWords, selectedWord).then((p)=>{
+        html = p;
+        el.setHTMLUnsafe(html);
+    });
+}
+
+async function TryWords(wordsArray) {
+    var passphrase = wordsArray[0];
+    for (var i = 1; i < 12; i++) {
+        passphrase += " " + wordsArray[i];
+    }
+    try {
+        await Passphrase.decode(passphrase);
+    } catch {
+        return false;
+    }
+    return true;
 }
