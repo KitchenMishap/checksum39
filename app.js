@@ -5,11 +5,17 @@ var selectedWord;
 function OnLoad() {
     wordIndices = [];
     selectedWord = null;
-    var buttonClass = RenderChosenWords();
-    RenderInstruction(buttonClass);
-    RenderKbForWord();
-    var matchingWordIndices = RenderMatchingWordButtons();
-    EnableDisableKeys(matchingWordIndices);
+    RenderChosenWords().then(buttonClass => {
+        RenderInstruction(buttonClass);
+        RenderKbForWord();
+        var matchingWordIndices = RenderMatchingWordButtons();
+        EnableDisableKeys(matchingWordIndices);
+    }).catch(() => {
+        RenderInstruction("invalid");
+        RenderKbForWord();
+        var matchingWordIndices = RenderMatchingWordButtons();
+        EnableDisableKeys(matchingWordIndices);
+    });
 }
 
 function RenderKbForWord() {
@@ -72,40 +78,46 @@ function RenderMatchingWordButtons() {
 
 function AddWord(wordIndex) {
     wordIndices.push(wordIndex);
-    buttonClass = RenderChosenWords();
-    RenderInstruction(buttonClass);
+    RenderChosenWords().then(buttonClass => {
+        RenderInstruction(buttonClass);
+    }).catch(()=>{
+        RenderInstruction("invalid");
+    });
 }
 
-function RenderChosenWords() {
-    var checksumValid = true;
-    try {
-        CheckChecksum();
-    } catch {
-        checksumValid = false;
+async function Check12Words() {
+    var wordsArray = [];
+    for (var i=0; i<12; i++ ) {
+        wordsArray[i]= bip39Words[wordIndices[i]];
     }
-    buttonClass = "valid";
-    if (!checksumValid) {
+    return await TryWords(wordsArray)
+}
+
+async function RenderChosenWords() {
+    var valid = await Check12Words();
+    var buttonClass = "valid";
+    if (!valid) {
         buttonClass = "invalid";
     }
-    if (wordIndices.length!==12) {
+    if (wordIndices.length !== 12) {
         buttonClass = "insufficient"
     }
     for (var i = 0; i < 12; i++) {
         var id = "w" + i;
         var el = document.getElementById(id);
-        html = "(word " + (i+1) + ")<br>";
+        html = "(word " + (i + 1) + ")<br>";
         var thisButtonClass = buttonClass;
-        if (selectedWord===i) {
+        if (selectedWord === i) {
             thisButtonClass = "selected";
         }
-        if( i < wordIndices.length ) {
+        if (i < wordIndices.length) {
             html += "<button " +
                 "class='" + thisButtonClass + "' " +
                 "onclick='OnSelectWord(" + i + ")' " +
                 ">";
             html += DrawWord(wordIndices[i]);
             html += "</button>\n";
-        } else if ( i === wordIndices.length ) {
+        } else if (i === wordIndices.length) {
             html += DrawWordEditBox();
         } else {
             html += DrawEmptyWord();
@@ -140,22 +152,6 @@ function OnChooseWord(index) {
     RenderMatchingWordButtons();
 }
 
-function CheckChecksum() {
-    if (wordIndices.length!==12) {
-        thrownull;
-    }
-    passphrase = bip39Words(wordIndices[0]);
-    for (var i = 1; i < 12; i++) {
-        passphrase += " " + bip39Words(wordIndices[i]);
-    }
-    // This will throw if the checksum is invalid
-    try {
-        Passphrase.checksum(wordIndices);
-    } catch (e) {
-        thrownull;
-    }
-}
-
 function RenderInstruction(buttonClass) {
     el = document.getElementsByClassName("msg")[0];
     if (buttonClass === "insufficient") {
@@ -163,19 +159,26 @@ function RenderInstruction(buttonClass) {
     } else if (buttonClass === "invalid") {
         if (selectedWord === null) {
             el.setHTMLUnsafe("Checksum invalid, choose a word above to change...");
+            HideKeyboard();
+            ClearValidChecksumButtons();
         } else {
             el.setHTMLUnsafe("Checksum invalid, replace with one of these valid words:");
             RenderValidChecksumButtons();
         }
     } else if (buttonClass === "valid") {
         el.setHTMLUnsafe("Checksum valid, well done!")
+        ClearValidChecksumButtons();
+        HideKeyboard();
     }
 }
 
 function OnSelectWord(nthWord) {
     selectedWord = nthWord;
-    var buttonClass = RenderChosenWords();
-    RenderInstruction(buttonClass);
+    RenderChosenWords().then(buttonClass => {
+        RenderInstruction(buttonClass);
+    }).catch(()=>{
+        RenderInstruction("invalid");
+    });
 }
 
 async function GenerateValidWordButtons(baselineWords, indexToReplace) {
@@ -233,6 +236,13 @@ function RenderValidChecksumButtons()
     });
 }
 
+function ClearValidChecksumButtons()
+{
+    var el = document.getElementById("matchingWords");
+    el.setHTMLUnsafe("");
+}
+
+
 async function TryWords(wordsArray) {
     var passphrase = wordsArray[0];
     for (var i = 1; i < 12; i++) {
@@ -244,4 +254,13 @@ async function TryWords(wordsArray) {
         return false;
     }
     return true;
+}
+
+function OnReplaceWord(wordIndex) {
+    wordIndices[selectedWord] = wordIndex;
+    RenderChosenWords().then(buttonClass => {
+        RenderInstruction(buttonClass);
+    }).catch(()=>{
+        RenderInstruction("invalid");
+    });
 }
