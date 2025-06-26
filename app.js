@@ -1,9 +1,12 @@
 // globals
-var wordIndices
+var wordIndices;
+var selectedWord;
 
 function OnLoad() {
     wordIndices = [];
-    RenderChosenWords();
+    selectedWord = null;
+    var buttonClass = RenderChosenWords();
+    RenderInstruction(buttonClass);
     RenderKbForWord();
     var matchingWordIndices = RenderMatchingWordButtons();
     EnableDisableKeys(matchingWordIndices);
@@ -69,7 +72,8 @@ function RenderMatchingWordButtons() {
 
 function AddWord(wordIndex) {
     wordIndices.push(wordIndex);
-    RenderChosenWords();
+    buttonClass = RenderChosenWords();
+    RenderInstruction(buttonClass);
 }
 
 function RenderChosenWords() {
@@ -90,8 +94,15 @@ function RenderChosenWords() {
         var id = "w" + i;
         var el = document.getElementById(id);
         html = "(word " + (i+1) + ")<br>";
+        var thisButtonClass = buttonClass;
+        if (selectedWord===i) {
+            thisButtonClass = "selected";
+        }
         if( i < wordIndices.length ) {
-            html += "<button class='" + buttonClass + "'>";
+            html += "<button " +
+                "class='" + thisButtonClass + "' " +
+                "onclick='OnSelectWord(" + i + ")' " +
+                ">";
             html += DrawWord(wordIndices[i]);
             html += "</button>\n";
         } else if ( i === wordIndices.length ) {
@@ -101,6 +112,7 @@ function RenderChosenWords() {
         }
         el.setHTMLUnsafe(html);
     }
+    return buttonClass;
 }
 
 function DrawWordEditBox() {
@@ -130,7 +142,7 @@ function OnChooseWord(index) {
 
 function CheckChecksum() {
     if (wordIndices.length!==12) {
-        throw(null);
+        thrownull;
     }
     passphrase = bip39Words(wordIndices[0]);
     for (var i = 1; i < 12; i++) {
@@ -140,7 +152,22 @@ function CheckChecksum() {
     try {
         Passphrase.checksum(wordIndices);
     } catch (e) {
-        throw(null);
+        thrownull;
     }
-    return;
+}
+
+function RenderInstruction(buttonClass) {
+    el = document.getElementsByClassName("msg")[0];
+    if (buttonClass === "insufficient") {
+        el.setHTMLUnsafe("Add letters or a word:")
+    } else if (buttonClass === "invalid") {
+        el.setHTMLUnsafe("Checksum invalid, choose a word to change:")
+    } else if (buttonClass === "valid") {
+        el.setHTMLUnsafe("Checksum valid, well done!")
+    }
+}
+
+function OnSelectWord(nthWord) {
+    selectedWord = nthWord;
+    RenderChosenWords();
 }
